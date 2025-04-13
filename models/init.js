@@ -6,6 +6,7 @@ async function createAdmin() {
     if (!admin) {
         const hashedPassword = await bcrypt.hash('admin1234', 10);
         await db('users').insert({
+            email: 'admin@admin.com',
             username: 'admin',
             password: hashedPassword,
             role: 'admin',
@@ -19,7 +20,8 @@ async function initializeTables() {
     if (!existsUsers) {
         await db.schema.createTable("users", (table) => {
             table.increments('id').primary();
-            table.string('username').notNullable().unique();
+            table.string('username').notNullable();
+            table.string('email').notNullable().unique();
             table.string('password').notNullable();
             table.string('role').notNullable(); // user | technician | admin
         });

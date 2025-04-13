@@ -1,0 +1,119 @@
+### 🔐 Login admin
+POST http://localhost:3000/api/auth/admin
+Content-Type: application/json
+
+{
+  "email": "admin@admin.com",
+  "password": "admin1234"
+}
+
+> {%
+    client.global.set("ADMIN_TOKEN", response.body.token);
+%}
+
+### ▶️ Créer un utilisateur (user)
+POST http://localhost:3000/api/auth/new
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+
+{
+  "email": "user1@gmail.com",
+  "username": "utilisateur1",
+  "password": "motdepasse",
+  "role": "user"
+}
+
+### ▶️ Créer un technicien
+POST http://localhost:3000/api/auth/new
+Authorization: Bearer {{ADMIN_TOKEN}}
+Content-Type: application/json
+
+{
+  "email": "tech1@gmail.com",
+  "username": "tech1",
+  "password": "techpass",
+  "role": "technician"
+}
+
+### ▶️ Créer un admin
+POST http://localhost:3000/api/auth/new
+Content-Type: application/json
+
+{
+  "email": "admin@admin.com",
+  "username": "admin1",
+  "password": "admin1234",
+  "role": "admin"
+}
+
+### 🔐 Login utilisateur
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user1@gmail.com",
+  "password": "motdepasse"
+}
+
+> {%
+    client.global.set("USER_TOKEN", response.body.token);
+%}
+
+### 🔐 Login technicien
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "tech1@gmail.com",
+  "password": "techpass"
+}
+
+> {%
+    client.global.set("TECH_TOKEN", response.body.token);
+%}
+
+### 📋 Créer un ticket (user)
+POST http://localhost:3000/api/tickets
+Authorization: Bearer {{USER_TOKEN}}
+Content-Type: application/json
+
+{
+  "title": "PC qui surchauffe",
+  "description": "Il devient très chaud rapidement.",
+  "status": "open",
+  "userId": 2,
+  "technicianId": null,
+  "createdAt": "2025-04-13T15:00:00Z",
+  "closedAt": null
+}
+
+### 👀 Voir mes tickets (user)
+GET http://localhost:3000/api/tickets
+Authorization: Bearer {{USER_TOKEN}}
+
+### 👀 Voir tous les tickets (technicien)
+GET http://localhost:3000/api/tickets
+Authorization: Bearer {{TECH_TOKEN}}
+
+### 👁️ Voir un ticket précis
+GET http://localhost:3000/api/tickets/1
+Authorization: Bearer {{TECH_TOKEN}}
+
+### ✏️ Modifier un ticket (technicien)
+PUT http://localhost:3000/api/tickets/1
+Authorization: Bearer {{TECH_TOKEN}}
+Content-Type: application/json
+
+{
+  "title": "PC qui surchauffe - ventilateur HS",
+  "description": "Il faut changer le ventilateur.",
+  "status": "in progress",
+  "userId": 2,
+  "technicianId": 3,
+  "createdAt": "2025-04-13T15:00:00Z",
+  "closedAt": null
+}
+
+### ❌ Supprimer un ticket (admin)
+DELETE http://localhost:3000/api/tickets/admin/tickets/1
+Authorization: Bearer {{ADMIN_TOKEN}}
