@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const { body, query, matchedData, validationResult } = require('express-validator');
 const { authenticate, authorizeRoles } = require('../middlewares/auth');
 
+// Rejeter la création d'un ticket fait par un admin
 function rejectAdmins(req, res, next) {
     if(req.user.role === 'admin') {
         return res.status(403).json({ error: 'Les administrateurs ne peuvent pas accéder aux tickets' });
@@ -13,6 +14,7 @@ function rejectAdmins(req, res, next) {
     next();
 }
 
+// Chaine de validation express-validator
 const ticketValidation = [
     body('title').isString().notEmpty(),
     body('description').isString().notEmpty(),
@@ -23,6 +25,7 @@ const ticketValidation = [
     body('closedAt').optional({ nullable: true }).isISO8601()
 ];
 
+// Création d'un nouveau ticket
 router.post('/', authenticate, rejectAdmins, ticketValidation, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -53,6 +56,7 @@ router.post('/', authenticate, rejectAdmins, ticketValidation, async (req, res) 
 
 });
 
+// Obtention de la liste des tickets (toute la liste pour les technician et juste ceux associer au user pour les utilisateurs)
 router.get('/', authenticate, rejectAdmins, async (req, res) => {
     if (req.user.role === 'technician') {
         const tickets = await db('tickets');
@@ -63,6 +67,7 @@ router.get('/', authenticate, rejectAdmins, async (req, res) => {
     res.json(tickets);
 });
 
+// Obtenir les détails d'un ticket spécifique
 router.get('/:id', authenticate, rejectAdmins, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -80,6 +85,7 @@ router.get('/:id', authenticate, rejectAdmins, async (req, res) => {
     res.json(ticket);
 });
 
+// Modification d'un ticket
 router.put('/:id', authenticate, authorizeRoles('technician'), ticketValidation, async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -105,6 +111,7 @@ router.put('/:id', authenticate, authorizeRoles('technician'), ticketValidation,
     }
 );
 
+// Suppréssion d'un ticket
 router.delete('/admin/tickets/:id', authenticate, authorizeRoles('admin'), async (req, res) => {
         const deleted = await db('tickets').where({ id: req.params.id }).del();
         if (!deleted) return res.status(404).json({ error: 'Ticket introuvable' });

@@ -1,5 +1,6 @@
 const knex = require('knex');
 
+// initialisation de la base de donnée
 const db = knex({
     client: 'sqlite3',
     connection: {

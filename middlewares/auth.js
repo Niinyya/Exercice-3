@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 
+// Authentication du token de l'utilisateur
 function authenticate(req, res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -15,6 +16,7 @@ function authenticate(req, res, next) {
     }
 }
 
+// Vérification des roles authorisé à utiliser la route
 function authorizeRoles(...roles) {
     return (req, res, next) => {
         if (!roles.includes(req.user.role)) {

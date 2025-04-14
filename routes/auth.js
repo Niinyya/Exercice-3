@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const { authenticate, authorizeRoles } = require('../middlewares/auth');
 
+// Chaine de validation express-validator
 const userValidation = [
     body('username').isString().notEmpty(),
     body('email').isEmail(),

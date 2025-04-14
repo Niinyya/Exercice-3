@@ -1,6 +1,7 @@
 const db = require("../db/knex");
 const bcrypt = require('bcrypt');
 
+// Création d'un admin pour la création d'autre utilisateurs
 async function createAdmin() {
     const admin = await db('users').where({ username: 'admin' }).first();
     if (!admin) {
@@ -15,6 +16,7 @@ async function createAdmin() {
     }
 }
 
+// initialisation de la base de donnée
 async function initializeTables() {
     const existsUsers = await db.schema.hasTable("users");
     if (!existsUsers) {
